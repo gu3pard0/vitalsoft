@@ -46,7 +46,6 @@ export default function Home({ searchParams }: { searchParams: SP }) {
             <a href="#hacemos" className="hover:text-white transition-colors">Qué hacemos</a>
             <a href="#demo" className="hover:text-white transition-colors">Ejemplo</a>
             <a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a>
-            <a href="/video" className="hover:text-white transition-colors">Edición de vídeo</a>
           </nav>
           <a
             href={MAILTO}
@@ -190,7 +189,6 @@ export default function Home({ searchParams }: { searchParams: SP }) {
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row justify-between gap-4 text-xs text-white/30">
           <span>© {new Date().getFullYear()} VitalSoft · Las Palmas de Gran Canaria</span>
           <span className="flex gap-5">
-            <a href="/video" className="hover:text-white/60 transition-colors">Edición de vídeo</a>
             <a href="/privacidad" className="hover:text-white/60 transition-colors">Privacidad</a>
             <a href="/terminos" className="hover:text-white/60 transition-colors">Términos</a>
           </span>
