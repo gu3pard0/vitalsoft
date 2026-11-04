@@ -21,7 +21,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const isHome = typeof window !== "undefined" && window.location.pathname === "/";
+  const isHome = typeof window !== "undefined" && window.location.pathname === "/video";
 
   const handleScroll = (href: string) => {
     setMobileOpen(false);
@@ -31,7 +31,7 @@ export default function Navbar() {
       document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
     } else {
       // Desde otras páginas, navegar a la home con el ancla
-      window.location.href = "/" + href;
+      window.location.href = "/video" + href;
     }
   };
 
