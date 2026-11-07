@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "VitalSoft — Herramientas a medida para gestorías y asesorías",
+  title: "VitalSoft — Herramientas a medida para vuestro negocio",
   description:
-    "Desarrollamos herramientas a medida para gestorías y asesorías: avisos automáticos de documentación, paneles de estado de trámites y automatización del trabajo repetitivo.",
+    "Desarrollamos herramientas a medida: avisos automáticos de documentación y vencimientos, reservas con recordatorios, paneles de estado y automatización del trabajo repetitivo.",
   openGraph: {
-    title: "VitalSoft — Herramientas a medida para gestorías y asesorías",
+    title: "VitalSoft — Herramientas a medida para vuestro negocio",
     description:
-      "Avisos automáticos de documentación, paneles de estado de trámites y automatización a medida.",
+      "Avisos automáticos, reservas con recordatorios, paneles de estado y automatización a medida.",
     type: "website",
     url: "https://vitalsoft.pro",
   },
@@ -44,7 +44,7 @@ export default function Home({ searchParams }: { searchParams: SP }) {
           </a>
           <nav className="hidden sm:flex gap-8 text-sm text-white/50">
             <a href="#hacemos" className="hover:text-white transition-colors">Qué hacemos</a>
-            <a href="#demo" className="hover:text-white transition-colors">Ejemplo</a>
+            <a href="/demo" className="hover:text-white transition-colors">Demos</a>
             <a href="#proceso" className="hover:text-white transition-colors">Cómo trabajamos</a>
           </nav>
           <a
@@ -63,11 +63,11 @@ export default function Home({ searchParams }: { searchParams: SP }) {
             Software a medida · Las Palmas de Gran Canaria
           </p>
           <h1 className="font-display font-bold text-[1.85rem] sm:text-5xl md:text-[3.25rem] leading-[1.12] tracking-tight max-w-3xl">
-            Que vuestro equipo deje de perseguir documentos.
+            Que vuestro equipo deje de hacer a mano lo que puede hacerse solo.
           </h1>
           <p className="text-white/55 text-lg md:text-xl leading-relaxed mt-6 max-w-2xl">
-            Hacemos herramientas a medida para gestorías y asesorías. Avisan solas a los clientes cuando falta
-            documentación o se acerca un vencimiento, y dejan el estado de cada trámite a la vista.
+            Hacemos herramientas a medida que avisan solas a vuestros clientes, recuerdan citas, vigilan vencimientos y dejan
+            el estado de todo a la vista. Empezamos por gestorías y asesorías, y lo adaptamos a cada negocio.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <a
@@ -77,10 +77,10 @@ export default function Home({ searchParams }: { searchParams: SP }) {
               Contadnos vuestro caso
             </a>
             <a
-              href="#demo"
+              href="/demo"
               className="border border-white/15 hover:border-white/30 text-white/80 font-display font-semibold px-6 py-3.5 rounded-lg transition-colors"
             >
-              Ver un ejemplo
+              Ver demos
             </a>
           </div>
         </div>

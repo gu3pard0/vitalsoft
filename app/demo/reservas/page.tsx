@@ -126,7 +126,7 @@ export default function DemoReservas() {
       {/* Franja fija: es una demostración */}
       <div className="sticky top-0 z-20 bg-accent text-[#080808] text-xs sm:text-sm font-semibold px-4 py-2 flex flex-wrap items-center justify-between gap-2">
         <span>
-          DEMOSTRACIÓN · datos ficticios, no corresponden a ningún negocio real. Pruébala: lo que cambies solo se guarda en tu navegador.
+          DEMOSTRACIÓN · datos ficticios, no corresponden a ningún negocio real. Lo que se cambie aquí solo se guarda en el navegador.
         </span>
         <span className="flex gap-4">
           <button onClick={reset} className="underline underline-offset-2">Reiniciar demo</button>
@@ -323,7 +323,7 @@ export default function DemoReservas() {
         </div>
 
         <p className="text-white/40 text-sm mt-8 max-w-2xl">
-          Esto es un ejemplo. Cada sistema se adapta a tu negocio: tus servicios, tus horarios y tu forma de avisar a los clientes. Si te interesa algo parecido, escríbenos a{" "}
+          Esto es un ejemplo. Cada sistema se adapta a tu negocio: tus servicios, tus horarios y tu forma de avisar a los clientes. Si os interesa algo parecido, escribid a{" "}
           <a className="text-accent underline" href="mailto:info@vitalsoft.pro?subject=Demo%20de%20reservas">
             info@vitalsoft.pro
           </a>
