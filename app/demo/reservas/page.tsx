@@ -20,8 +20,15 @@ const DAYS = [
   { short: "Jue", long: "el jueves" },
   { short: "Vie", long: "el viernes" },
 ];
-const SERVICES = ["Corte", "Color", "Peinado", "Tratamiento", "Barba"];
-const BIZ = "Estudio Lumen";
+const SERVICES_BY_TYPE: Record<string, string[]> = {
+  peluqueria: ["Corte", "Color", "Peinado", "Tratamiento", "Barba"],
+  estetica: ["Limpieza facial", "Depilación", "Masaje", "Manicura", "Tratamiento"],
+  fisio: ["Sesión de fisioterapia", "Primera visita", "Masaje", "Punción seca", "Revisión"],
+  dental: ["Revisión", "Limpieza", "Empaste", "Ortodoncia", "Urgencia"],
+  vet: ["Consulta", "Vacunación", "Revisión", "Cirugía", "Peluquería canina"],
+  pilates: ["Clase reformer", "Clase suelo", "Clase privada", "Prueba gratuita"],
+};
+const DEFAULT_BIZ = "Estudio Lumen";
 const KEY = "vitalsoft-demo-reservas-v1";
 
 const SEED: Appt[] = [
@@ -65,16 +72,36 @@ export default function DemoReservas() {
   const [day, setDay] = useState(0);
   const [sel, setSel] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
-  const [form, setForm] = useState({ name: "", service: SERVICES[0], time: "10:00" });
+  const [biz, setBiz] = useState(DEFAULT_BIZ);
+  const [services, setServices] = useState<string[]>(SERVICES_BY_TYPE.peluqueria);
+  const [form, setForm] = useState({ name: "", service: SERVICES_BY_TYPE.peluqueria[0], time: "10:00" });
+
+  const [personal, setPersonal] = useState(false);
+  const remap = (list: string[]) =>
+    SEED.map((a) => ({ ...a, service: list[SERVICES_BY_TYPE.peluqueria.indexOf(a.service) % list.length] }));
 
   useEffect(() => {
     setItems(load());
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const n = (q.get("n") || "").replace(/[^A-Za-zÀ-ÿ0-9 &.'\-]/g, "").trim().slice(0, 40);
+      const list = SERVICES_BY_TYPE[q.get("t") || ""];
+      if (n || list) {
+        setPersonal(true);
+        setItems(list ? remap(list) : SEED);
+      }
+      if (n) setBiz(n);
+      if (list) {
+        setServices(list);
+        setForm((f) => ({ ...f, service: list[0] }));
+      }
+    } catch {}
     setReady(true);
   }, []);
 
   useEffect(() => {
-    if (ready) save(items);
-  }, [items, ready]);
+    if (ready && !personal) save(items);
+  }, [items, ready, personal]);
 
   const dayItems = useMemo(
     () => items.filter((a) => a.day === day).sort((a, b) => a.time.localeCompare(b.time)),
@@ -96,7 +123,7 @@ export default function DemoReservas() {
     setItems((cur) => cur.map((a) => (a.id === id ? { ...a, ...patch } : a)));
 
   const message = (a: Appt) =>
-    `Hola ${a.name.split(" ")[0]}, te recordamos tu cita de ${a.service.toLowerCase()} ${DAYS[a.day].long} a las ${a.time} en ${BIZ}. Responde 1 para confirmar o 2 para cancelar.`;
+    `Hola ${a.name.split(" ")[0]}, te recordamos tu cita de ${a.service.toLowerCase()} ${DAYS[a.day].long} a las ${a.time} en ${biz}. Responde 1 para confirmar o 2 para cancelar.`;
 
   const remindAll = () =>
     setItems((cur) => cur.map((a) => (a.status === "pendiente" ? { ...a, reminded: true } : a)));
@@ -109,13 +136,13 @@ export default function DemoReservas() {
       ...cur,
       { id, day, time: form.time, name, service: form.service, status: "pendiente", reminded: false },
     ]);
-    setForm({ name: "", service: SERVICES[0], time: "10:00" });
+    setForm({ name: "", service: services[0], time: "10:00" });
     setAdding(false);
     setSel(id);
   };
 
   const reset = () => {
-    setItems(SEED);
+    setItems(personal ? remap(services) : SEED);
     setSel(null);
     setDay(0);
     setAdding(false);
@@ -138,7 +165,7 @@ export default function DemoReservas() {
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
             <p className="text-white/40 text-xs uppercase tracking-widest">Panel de reservas</p>
-            <h1 className="font-display font-black text-2xl">{BIZ}</h1>
+            <h1 className="font-display font-black text-2xl">{biz}</h1>
           </div>
           <div className="flex gap-2">
             <button
@@ -207,7 +234,7 @@ export default function DemoReservas() {
                   onChange={(e) => setForm({ ...form, service: e.target.value })}
                   className="bg-white/5 rounded-lg px-3 py-2 text-sm outline-none"
                 >
-                  {SERVICES.map((s) => (
+                  {services.map((s) => (
                     <option key={s} className="bg-[#111]">{s}</option>
                   ))}
                 </select>
