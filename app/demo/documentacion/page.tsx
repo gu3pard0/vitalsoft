@@ -77,6 +77,19 @@ const SEED: Case[] = [
   },
 ];
 
+const SEED_MIXTO: Case[] = [
+  { id: 1, client: "Marta Ruiz Pérez", procedure: "Canje de carnet de conducir", due: 6, notified: false,
+    docs: [{ name: "DNI / NIE", received: true }, { name: "Carnet original", received: false }, { name: "Informe médico", received: false }] },
+  { id: 2, client: "Javier Mora Díaz", procedure: "Cambio de titularidad de vehículo", due: 14, notified: true,
+    docs: [{ name: "DNI de ambas partes", received: true }, { name: "Contrato de compraventa", received: true }, { name: "Justificante de pago", received: false }] },
+  { id: 3, client: "Olena K.", procedure: "Renovación de autorización de residencia", due: 3, notified: false,
+    docs: [{ name: "Pasaporte", received: true }, { name: "Empadronamiento", received: false }, { name: "Justificante de tasas", received: false }] },
+  { id: 4, client: "Panadería La Espiga", procedure: "Declaración trimestral", due: 9, notified: false,
+    docs: [{ name: "Facturas emitidas", received: true }, { name: "Facturas recibidas", received: true }, { name: "Extracto bancario", received: true }] },
+  { id: 5, client: "Carlos Vega Santana", procedure: "Expediente de segunda oportunidad", due: 30, notified: false,
+    docs: [{ name: "Relación de deudas", received: true }, { name: "Declaración de bienes", received: false }] },
+];
+
 function stateOf(c: Case): "completo" | "pendiente" | "urgente" {
   const missing = c.docs.some((d) => !d.received);
   if (!missing) return "completo";
@@ -105,18 +118,32 @@ export default function DemoDocumentacion() {
   const [items, setItems] = useState<Case[]>(SEED);
   const [ready, setReady] = useState(false);
   const [sel, setSel] = useState<number | null>(1);
+  const [despacho, setDespacho] = useState(DESPACHO);
+  const [personal, setPersonal] = useState(false);
+  const [asClient, setAsClient] = useState(false);
 
   useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const n = (q.get("n") || "").replace(/[^A-Za-zÀ-ÿ0-9 &.'\-]/g, "").trim().slice(0, 40);
+      if (n) {
+        setDespacho(n);
+        setPersonal(true);
+        setItems(SEED_MIXTO);
+        setReady(true);
+        return;
+      }
+    } catch {}
     setItems(load());
     setReady(true);
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || personal) return;
     try {
       localStorage.setItem(KEY, JSON.stringify(items));
     } catch {}
-  }, [items, ready]);
+  }, [items, ready, personal]);
 
   const selected = items.find((c) => c.id === sel) ?? null;
 
@@ -137,7 +164,7 @@ export default function DemoDocumentacion() {
     setItems((cur) => cur.map((c) => (stateOf(c) !== "completo" ? { ...c, notified: true } : c)));
 
   const reset = () => {
-    setItems(SEED);
+    setItems(personal ? SEED_MIXTO : SEED);
     setSel(1);
   };
 
@@ -166,7 +193,7 @@ export default function DemoDocumentacion() {
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
             <p className="text-white/40 text-xs uppercase tracking-widest">Panel de expedientes</p>
-            <h1 className="font-display font-black text-2xl">{DESPACHO}</h1>
+            <h1 className="font-display font-black text-2xl">{despacho}</h1>
           </div>
           <button
             onClick={notifyAll}
@@ -229,6 +256,48 @@ export default function DemoDocumentacion() {
               <p className="text-white/40 text-sm">Pulsa un expediente para ver sus documentos y el aviso que recibiría el cliente.</p>
             ) : (
               <>
+                <div className="flex gap-1 mb-4 text-xs">
+                  {[["Vista del despacho", false], ["Vista del cliente", true]].map(([l, v]) => (
+                    <button
+                      key={l as string}
+                      onClick={() => setAsClient(v as boolean)}
+                      className={`px-3 py-1.5 rounded-full border ${asClient === v ? "bg-accent text-[#080808] border-accent font-semibold" : "border-white/15 text-white/60"}`}
+                    >
+                      {l}
+                    </button>
+                  ))}
+                </div>
+                {asClient ? (
+                  <div>
+                    <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Así lo ve {selected.client.split(" ")[0]}</p>
+                    <p className="font-bold">{selected.procedure}</p>
+                    <p className="text-sm text-white/50 mb-4">{despacho}</p>
+                    {(() => {
+                      const got = selected.docs.filter((d) => d.received).length;
+                      const pct = Math.round((got / selected.docs.length) * 100);
+                      const done = got === selected.docs.length;
+                      return (
+                        <>
+                          <div className="h-2 rounded-full bg-white/10 mb-2 overflow-hidden">
+                            <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
+                          </div>
+                          <p className="text-sm mb-4">
+                            {done ? "Documentación completa. Tu trámite está en gestión." : `Documentación recibida: ${got} de ${selected.docs.length}`}
+                          </p>
+                          <ul className="space-y-2 mb-4 text-sm">
+                            {selected.docs.map((d) => (
+                              <li key={d.name} className={d.received ? "text-white/80" : "text-amber-300"}>
+                                {d.received ? "✓ Recibido" : "○ Pendiente"} · {d.name}
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="text-xs text-white/40">Plazo estimado: {selected.due} días. Sin llamadas: aquí ves siempre cómo va tu trámite.</p>
+                        </>
+                      );
+                    })()}
+                  </div>
+                ) : (
+                <>
                 <p className="text-white/40 text-xs uppercase tracking-widest mb-1">Expediente</p>
                 <p className="font-bold">{selected.client}</p>
                 <p className="text-sm text-white/50 mb-4">{selected.procedure}</p>
@@ -280,6 +349,8 @@ export default function DemoDocumentacion() {
                       </button>
                     )}
                   </>
+                )}
+                </>
                 )}
               </>
             )}
